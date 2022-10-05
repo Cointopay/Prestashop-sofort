@@ -38,7 +38,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
         //$cart_id = Tools::getValue('CustomerReferenceNr');
 		$cart = $this->context->cart;
         
-        $order_id = Tools::getValue('CustomerReferenceNr');
+        $order_id = explode('----', Tools::getValue('CustomerReferenceNr'))[1];
 		$TransactionID = Tools::getValue('TransactionID');
 		
 		$ConfirmCode = Tools::getValue('ConfirmCode');
@@ -47,7 +47,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 
         try {
             if (!$order) {
-                $error_message = 'Cointopay Order #' . Tools::getValue('CustomerReferenceNr') . ' does not exists';
+                $error_message = 'Cointopay Order #' . explode('----', Tools::getValue('CustomerReferenceNr'))[0] . ' does not exists';
 
                 $this->logError($error_message, $order_id);
                 throw new Exception($error_message);
@@ -83,7 +83,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif(null != $response_ctp->data['CustomerReferenceNr'] && $response_ctp->data['CustomerReferenceNr'] != $order_id)
+				elseif(null != $response_ctp->data['CustomerReferenceNr'] && $response_ctp->data['CustomerReferenceNr'] != Tools::getValue('CustomerReferenceNr'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! CustomerReferenceNr doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -185,7 +185,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
 						$history->addWithemail(true, array(
-							'order_name' => Tools::getValue('CustomerReferenceNr'),
+							'order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0],
 						));
 						$this->context->smarty->assign(array('text' => 'Successfully Paid Order #'.$order_id));
 						if (_PS_VERSION_ >= '1.7') {
@@ -198,7 +198,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
 						$history->addWithemail(true, array(
-							'order_name' => Tools::getValue('CustomerReferenceNr'),
+							'order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0],
 						));
 
 						$this->context->smarty->assign(array('text' => 'Please pay remaining amount for Order #'.$order_id, 'RedirectURL' => Tools::getValue('RedirectURL')));
@@ -212,7 +212,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
 						$history->addWithemail(true, array(
-							'order_name' => Tools::getValue('CustomerReferenceNr'),
+							'order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0],
 						));
 
 						$this->context->smarty->assign(array('text' => 'Payment failed for Order #'.$order_id));
@@ -226,7 +226,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
 						$history->addWithemail(true, array(
-							'order_name' => Tools::getValue('CustomerReferenceNr'),
+							'order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0],
 						));
 
 						$this->context->smarty->assign(array('text' => 'Payment expired for Order #'.$order_id));
@@ -240,7 +240,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
 						$history->addWithemail(true, array(
-							'order_name' => Tools::getValue('CustomerReferenceNr'),
+							'order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0],
 						));
 
 						Tools::redirect($this->context->link->getModuleLink('cointopay_direct_sofort', 'cancel'));

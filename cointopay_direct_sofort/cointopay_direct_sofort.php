@@ -485,7 +485,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
 		$currency = new CurrencyCore($order->id_currency);
 		$OrdCurrency = $this->currencyCode($currency->iso_code);
         $link = new Link();
-		$paymentUrl = Context::getContext()->shop->getBaseURL(true) . 'module/'.$this->name.'/makepayment?id_order=' . $order->reference.'&amount='.$Ordtotal.'&isocode='.$OrdCurrency;
+		$paymentUrl = Context::getContext()->shop->getBaseURL(true) . 'module/'.$this->name.'/makepayment?id_order=' . $order->reference.'&internal_order_id='.$order->id.'&amount='.$Ordtotal.'&isocode='.$OrdCurrency;
         $customer = $order->getCustomer();
         if (Tools::isSubmit('send'.$this->name.'Payment')) {
             $data = array(
@@ -534,6 +534,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
         $link = new Link();
 		$paymentUrl = $link->getModuleLink('cointopay_direct_sofort', 'makepayment', array(
           'id_order' => $order->reference,
+          'internal_order_id' => $order->id,
 		  'amount' => $Ordtotal,
 		  'isocode' => $OrdCurrency
         ), true);

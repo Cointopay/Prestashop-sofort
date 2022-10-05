@@ -91,7 +91,7 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
 
         \Cointopay_Direct_Sofort\Cointopay_Direct_Sofort::config($ctpConfig);
         $order = \Cointopay_Direct_Sofort\Merchant\Order::createOrFail(array(
-            'order_id'         => $orderObj->reference,
+            'order_id'         => implode('----', [$orderObj->reference, $this->module->currentOrder]),
             'price'            => $total,
             'currency'         => $this->currencyCode($currency->iso_code),
             'cancel_url'       => $this->flashEncode($this->context->link->getModuleLink('cointopay_direct_sofort', 'cancel')),
