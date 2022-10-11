@@ -144,21 +144,21 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 					if ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 0) {
 						$order_status = 'PS_OS_PAYMENT';
 					} elseif ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 1) {
-						$order_status = 'COINTOPAY_DIRECT_SOFORT_PNOTENOUGH';
+						$order_status = 'COINTOPAY_CC_PNOTENOUGH';
 						$this->logError('PS Orders is paid cointopay notenough', $order_id);
 					} elseif ($ctp_order_status == 'failed') {
-						$order_status = 'PS_OS_ERROR';
+						$order_status = 'COINTOPAY_CC_FAILED';
 						$this->logError('PS Orders is failed', $order_id);
 					} elseif ($ctp_order_status == 'underpaid') {
-						$order_status = 'COINTOPAY_DIRECT_SOFORT_PNOTENOUGH';
+						$order_status = 'COINTOPAY_CC_PNOTENOUGH';
 						$this->logError('PS Orders is paid cointopay notenough', $order_id);
 					} elseif ($ctp_order_status == 'expired') {
-						$order_status = 'COINTOPAY_DIRECT_SOFORT_EXPIRED';
+						$order_status = 'COINTOPAY_CC_EXPIRED';
 						$this->logError('PS Orders is expired', $order_id);
 					} elseif ($ctp_order_status == 'canceled') {
 						$order_status = 'PS_OS_CANCELED';
 					} elseif ($ctp_order_status == 'waiting') {
-						$order_status = 'COINTOPAY_DIRECT_SOFORT_WAITING';
+						$order_status = 'COINTOPAY_CC_WAITING';
 					} elseif ($ctp_order_status == 'refunded') {
 						$order_status = 'PS_OS_REFUND';
 					} else {
@@ -178,7 +178,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						} else {
 							$this->setTemplate('ctp_payment_callback.tpl');
 						}
-					} elseif ($order_status == 'COINTOPAY_DIRECT_SOFORT_PNOTENOUGH') {
+					} elseif ($order_status == 'COINTOPAY_CC_PNOTENOUGH') {
 						$history = new OrderHistory();
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
@@ -206,7 +206,7 @@ class Cointopay_Direct_SofortCallbackModuleFrontController extends ModuleFrontCo
 						} else {
 							$this->setTemplate('ctp_payment_cancel.tpl');
 						}
-					} elseif ($order_status == 'COINTOPAY_DIRECT_SOFORT_EXPIRED') {
+					} elseif ($order_status == 'COINTOPAY_CC_EXPIRED') {
 						$history = new OrderHistory();
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);

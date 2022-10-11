@@ -98,24 +98,39 @@ class Cointopay_Direct_Sofort extends PaymentModule
 
         $newStates = [
             [
-                'name' => 'Waiting card payment',
+                'name' => 'instant bank transfer pending',
                 'color' => 'RoyalBlue',
-                'config' => 'COINTOPAY_DIRECT_SOFORT_PENDING',
+                'config' => 'COINTOPAY_CC_PENDING',
             ],
             [
-                'name' => 'Cointopay Direct Sofort payment expired',
+                'name' => 'instant payment accepted',
+                'color' => 'RoyalBlue',
+                'config' => 'COINTOPAY_CC_PAID',
+            ],
+            [
+                'name' => 'instant bank transfer',
+                'color' => 'RoyalBlue',
+                'config' => 'COINTOPAY_CC_PROCESSING_IN_PROGRESS',
+            ],
+            [
+                'name' => 'Cointopay Fiat payment payment failed',
+                'color' => '#FF8C00',
+                'config' => 'COINTOPAY_CC_FAILED',
+            ],
+            [
+                'name' => 'Cointopay Fiat payment payment expired',
                 'color' => '#DC143C',
-                'config' => 'COINTOPAY_DIRECT_SOFORT_EXPIRED',
+                'config' => 'COINTOPAY_CC_EXPIRED',
             ],
             [
-                'name' => 'Cointopay Direct Sofort invoice is invalid',
+                'name' => 'Cointopay Fiat payment invoice is invalid',
                 'color' => '#8f0621',
-                'config' => 'COINTOPAY_DIRECT_SOFORT_INVALID',
+                'config' => 'COINTOPAY_CC_INVALID',
             ],
             [
-                'name' => 'Cointopay Direct Sofort not enough',
+                'name' => 'Cointopay Fiat payment not enough',
                 'color' => '#32CD32',
-                'config' => 'COINTOPAY_DIRECT_SOFORT_PNOTENOUGH',
+                'config' => 'COINTOPAY_CC_PNOTENOUGH',
             ],
         ];
 
@@ -158,21 +173,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
 
     public function uninstall()
     {
-        $order_not_enough = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_PNOTENOUGH'));
-        $order_state_expired = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_EXPIRED'));
-        $order_state_invalid = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_INVALID'));
-        $order_state_pending = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_PENDING'));
-
-        return (Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_MERCHANT_ID') &&
-            Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_SECURITY_CODE') &&
-            Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_DISPLAY_NAME') &&
-            Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_CRYPTO_CURRENCY') &&
-            $order_not_enough->delete() &&
-            $order_state_expired->delete() &&
-            $order_state_invalid->delete() &&
-            $order_state_pending->delete() &&
-            parent::uninstall()
-        );
+        return (parent::uninstall());
     }
 
     protected function createOrderState($state)
