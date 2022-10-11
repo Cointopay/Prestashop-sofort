@@ -27,7 +27,7 @@
 /**
  * @since 1.5.0
  */
- 
+
 require_once(_PS_MODULE_DIR_ . '/cointopay_direct_sofort/vendor/cointopay/init.php');
 require_once(_PS_MODULE_DIR_ . '/cointopay_direct_sofort/vendor/version.php');
 
@@ -40,7 +40,7 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
     {
         $cart = $this->context->cart;
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active) {
-            Tools::redirect($this->context->link->getPageLink('index',true).'order?step=1');
+            Tools::redirect($this->context->link->getPageLink('index', true) . 'order?step=1');
         }
 
         // Check that this payment option is still available in case the customer changed his address just before the end of the checkout process
@@ -59,35 +59,35 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
 
         $customer = new Customer($cart->id_customer);
         if (!Validate::isLoadedObject($customer))
-            Tools::redirect($this->context->link->getPageLink('index',true).'order?step=1');
+            Tools::redirect($this->context->link->getPageLink('index', true) . 'order?step=1');
 
         $currency = $this->context->currency;
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-    
+
         $this->module->validateOrder($cart->id, Configuration::get('COINTOPAY_DIRECT_SOFORT_PENDING'), $total, $this->module->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
-		$link = new Link();
+        $link = new Link();
         $success_url = '';
-		$success_url = $link->getPageLink('order-confirmation', null, null, array(
-          'id_cart'     => $cart->id,
-          'id_module'   => $this->module->id,
-          'key'         => $customer->secure_key
+        $success_url = $link->getPageLink('order-confirmation', null, null, array(
+            'id_cart'     => $cart->id,
+            'id_module'   => $this->module->id,
+            'key'         => $customer->secure_key
         ));
-		$description = array();
+        $description = array();
         foreach ($cart->getProducts() as $product) {
             $description[] = $product['cart_quantity'] . ' × ' . $product['name'];
         }
-		$merchant_id = Configuration::get('COINTOPAY_DIRECT_SOFORT_MERCHANT_ID');
+        $merchant_id = Configuration::get('COINTOPAY_DIRECT_SOFORT_MERCHANT_ID');
         $security_code = Configuration::get('COINTOPAY_DIRECT_SOFORT_SECURITY_CODE');
         $user_currency = Configuration::get('COINTOPAY_DIRECT_SOFORT_CRYPTO_CURRENCY');
         $selected_currency = (isset($user_currency) && !empty($user_currency)) ? $user_currency : 1;
-		$ctpConfig = array(
-          'merchant_id' => $merchant_id,
-          'security_code'=>$security_code,
-          'selected_currency'=>$selected_currency,
-          'user_agent' => 'Cointopay - Prestashop v'._PS_VERSION_.' Extension v'.COINTOPAY_DIRECT_SOFORT_PRESTASHOP_EXTENSION_VERSION
+        $ctpConfig = array(
+            'merchant_id' => $merchant_id,
+            'security_code' => $security_code,
+            'selected_currency' => $selected_currency,
+            'user_agent' => 'Cointopay - Prestashop v' . _PS_VERSION_ . ' Extension v' . COINTOPAY_DIRECT_SOFORT_PRESTASHOP_EXTENSION_VERSION
         );
-		$orderObj = new Order($this->module->currentOrder);
+        $orderObj = new Order($this->module->currentOrder);
 
         \Cointopay_Direct_Sofort\Cointopay_Direct_Sofort::config($ctpConfig);
         $order = \Cointopay_Direct_Sofort\Merchant\Order::createOrFail(array(
@@ -97,24 +97,24 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
             'cancel_url'       => $this->flashEncode($this->context->link->getModuleLink('cointopay_direct_sofort', 'cancel')),
             'callback_url'     => $this->flashEncode($this->context->link->getModuleLink('cointopay_direct_sofort', 'callback')),
             'title'            => Configuration::get('PS_SHOP_NAME') . ' Order #' . $orderObj->reference,
-            'selected_currency'=> $selected_currency
+            'selected_currency' => $selected_currency
         ));
-         
+
         if ($order) {
-			$regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
-			if(preg_match_all("/$regexp/siU", $order->PaymentDetail, $matches, PREG_SET_ORDER)) {
-				foreach($matches as $key=>$match) { 
-				if ($key == 2) {
-					@header("Location: ".$match[2]);die;
-				}
-				}
-			}
-		}
-		else {
-            Tools::redirect($this->context->link->getPageLink('index',true).'order?step=3');
+            $regexp = "<a\s[^>]*href=(\"??)([^\" >]*?)\\1[^>]*>(.*)<\/a>";
+            if (preg_match_all("/$regexp/siU", $order->PaymentDetail, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $key => $match) {
+                    if ($key == 2) {
+                        @header("Location: " . $match[2]);
+                        die;
+                    }
+                }
+            }
+        } else {
+            Tools::redirect($this->context->link->getPageLink('index', true) . 'order?step=3');
         }
     }
-	/**
+    /**
      * URL encode to UTF-8
      *
      * @param $input
@@ -132,14 +132,14 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
      */
     public function currencyCode($isoCode)
     {
-        $currencyCode='';
+        $currencyCode = '';
 
         if (isset($isoCode) && ($isoCode == 'RUB')) {
-            $currencyCode='RUR';
+            $currencyCode = 'RUR';
         } else {
-            $currencyCode= $isoCode;
+            $currencyCode = $isoCode;
         }
-        
+
         return $currencyCode;
     }
 }

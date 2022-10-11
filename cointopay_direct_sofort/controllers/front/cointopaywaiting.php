@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2019 PrestaShop and Contributors
  *
@@ -29,44 +30,44 @@ require_once(_PS_MODULE_DIR_ . '/cointopay_direct_sofort/vendor/version.php');
 
 class Cointopay_Direct_SofortCointopaywaitingModuleFrontController extends ModuleFrontController
 {
-    public $ssl = true;
+	public $ssl = true;
 
-    public function initContent()
-    {
-        parent::initContent();
+	public function initContent()
+	{
+		parent::initContent();
 
-        try {
-            if (isset($_REQUEST['merchant'])) {
+		try {
+			if (isset($_REQUEST['merchant'])) {
 				$mernt = $_REQUEST['merchant'];
 				$TransID = $_REQUEST['TransactionID'];
 				$orderID = $_REQUEST['orderID'];
-				
-				$url = 'https://cointopay.com/CloneMasterTransaction?MerchantID='.$mernt.'&TransactionID='.$TransID.'&output=json';
+
+				$url = 'https://cointopay.com/CloneMasterTransaction?MerchantID=' . $mernt . '&TransactionID=' . $TransID . '&output=json';
 				$ch = curl_init($url);
 				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_URL, $url);
-				$output=curl_exec($ch);
+				$output = curl_exec($ch);
 				curl_close($ch);
 				$decoded = json_decode($output);
 				$status_res = json_decode($output, true);
-				print_r($output);die;
+				print_r($output);
+				die;
 			}
-        } catch (Exception $e) {
-            $this->context->smarty->assign(array(
-                'text' => get_class($e) . ': ' . $e->getMessage()
-            ));
+		} catch (Exception $e) {
+			$this->context->smarty->assign(array(
+				'text' => get_class($e) . ': ' . $e->getMessage()
+			));
 			if (_PS_VERSION_ >= '1.7') {
 				$this->setTemplate('module:cointopay_direct_sofort/views/templates/front/ctp_payment_cancel.tpl');
 			} else {
 				$this->setTemplate('ctp_payment_cancel.tpl');
 			}
-        }
-		
-    }
+		}
+	}
 
-    private function logError($message, $cart_id)
-    {
-        PrestaShopLogger::addLog($message, 3, null, 'Cart', $cart_id, true);
-    }
+	private function logError($message, $cart_id)
+	{
+		PrestaShopLogger::addLog($message, 3, null, 'Cart', $cart_id, true);
+	}
 }

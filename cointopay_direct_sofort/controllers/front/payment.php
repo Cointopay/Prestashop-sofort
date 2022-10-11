@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2019 PrestaShop and Contributors
  *
@@ -36,7 +37,7 @@ class Cointopay_Direct_SofortPaymentModuleFrontController extends ModuleFrontCon
         $cart = $this->context->cart;
 
         if (!$this->module->checkCurrency($cart)) {
-            Tools::redirect($this->context->link->getPageLink('index',true).'order');
+            Tools::redirect($this->context->link->getPageLink('index', true) . 'order');
         }
 
         $this->context->smarty->assign(array(

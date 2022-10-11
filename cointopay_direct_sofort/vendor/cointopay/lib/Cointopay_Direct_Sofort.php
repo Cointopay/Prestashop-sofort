@@ -1,4 +1,5 @@
 <?php
+
 namespace cointopay_direct_sofort;
 
 class Cointopay_Direct_Sofort
@@ -43,7 +44,6 @@ class Cointopay_Direct_Sofort
         }
     }
 
-
     public static function request($url, $method = 'GET', $params = array(), $authentication = array())
     {
         $merchant_id = isset($authentication['merchant_id']) ? $authentication['merchant_id'] : self::$merchant_id;
@@ -67,26 +67,24 @@ class Cointopay_Direct_Sofort
 
         if ($url == 'merchant') {
             $request_check = 'merchant';
-           $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
+            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
 
             $result = self::callApi($url, $user_agent);
             return $result;
-        } 
-		elseif ($url == 'validation') {
-			 if (isset($params) && !empty($params)) {
-				$ConfirmCode = $params['ConfirmCode'];
-				$selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
-			   }
+        } elseif ($url == 'validation') {
+            if (isset($params) && !empty($params)) {
+                $ConfirmCode = $params['ConfirmCode'];
+                $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
+            }
             $url = "v2REAPI?MerchantID=$merchant_id&Call=Transactiondetail&APIKey=a&output=json&ConfirmCode=$ConfirmCode";
 
             $result = self::callApi($url, $user_agent);
             return $result;
-        }	
-		else {
-       $currency = $params['currency'];
+        } else {
+            $currency = $params['currency'];
 
-       $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
-       $result = self::callApi($url, $user_agent);
+            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
+            $result = self::callApi($url, $user_agent);
 
             if ($result == 'testmerchant success') {
 
@@ -111,10 +109,11 @@ class Cointopay_Direct_Sofort
             CURLOPT_USERAGENT => $user_agent
         ));
         $response = json_decode(curl_exec($curl), true);
-		if (is_string($response) && $response != 'testmerchant success'){
-			echo
-'BadCredentials:'.$response;  die;
-		}
+        if (is_string($response) && $response != 'testmerchant success') {
+            echo
+            'BadCredentials:' . $response;
+            die;
+        }
         curl_close($curl);
 
         return $response;

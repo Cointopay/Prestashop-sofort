@@ -1,29 +1,30 @@
 <?php
-/**
-* 2010-2014 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2010-2014 PrestaShop SA
 
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2010-2014 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ *  @author PrestaShop SA <contact@prestashop.com>
+ *  @copyright  2010-2014 PrestaShop SA
+
+ *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  International Registered Trademark & Property of PrestaShop SA
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -96,7 +97,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
         }
 
         $order_ctp_pending = new OrderState();
-		$order_ctp_pending->module_name = $this->name;
+        $order_ctp_pending->module_name = $this->name;
         $order_ctp_pending->name = array_fill(0, 10, 'Waiting card payment');
         $order_ctp_pending->send_email = 0;
         $order_ctp_pending->invoice = 0;
@@ -105,7 +106,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
         $order_ctp_pending->logable = 0;
 
         $order_expired = new OrderState();
-		$order_expired->module_name = $this->name;
+        $order_expired->module_name = $this->name;
         $order_expired->name = array_fill(0, 10, 'Cointopay Direct Sofort payment expired');
         $order_expired->send_email = 0;
         $order_expired->invoice = 0;
@@ -114,7 +115,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
         $order_expired->logable = 0;
 
         $order_invalid = new OrderState();
-		$order_invalid->module_name = $this->name;
+        $order_invalid->module_name = $this->name;
         $order_invalid->name = array_fill(0, 10, 'Cointopay Direct Sofort invoice is invalid');
         $order_invalid->send_email = 0;
         $order_invalid->invoice = 0;
@@ -123,7 +124,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
         $order_invalid->logable = 0;
 
         $order_not_enough = new OrderState();
-		$order_not_enough->module_name = $this->name;
+        $order_not_enough->module_name = $this->name;
         $order_not_enough->name = array_fill(0, 10, 'Cointopay Direct Sofort not enough');
         $order_not_enough->send_email = 0;
         $order_not_enough->invoice = 0;
@@ -163,30 +164,32 @@ class Cointopay_Direct_Sofort extends PaymentModule
         Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_PNOTENOUGH', $order_not_enough->id);
         Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_EXPIRED', $order_expired->id);
         Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_INVALID', $order_invalid->id);
-		Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_PENDING', $order_ctp_pending->id);
-		
+        Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_PENDING', $order_ctp_pending->id);
 
-         if (_PS_VERSION_ >= '1.7.7') {
-				if (!parent::install()
-            || !$this->registerHook('displayPaymentEU')
-            || !$this->registerHook('paymentReturn')
-            || !$this->registerHook('paymentOptions')
-            || !$this->registerHook('orderConfirmation')
-			|| !$this->registerHook('DisplayAdminOrder')   
-        ) {
-            return false;
+
+        if (_PS_VERSION_ >= '1.7.7') {
+            if (
+                !parent::install()
+                || !$this->registerHook('displayPaymentEU')
+                || !$this->registerHook('paymentReturn')
+                || !$this->registerHook('paymentOptions')
+                || !$this->registerHook('orderConfirmation')
+                || !$this->registerHook('DisplayAdminOrder')
+            ) {
+                return false;
+            }
+        } else {
+            if (
+                !parent::install()
+                || !$this->registerHook('displayPaymentEU')
+                || !$this->registerHook('paymentReturn')
+                || !$this->registerHook('paymentOptions')
+                || !$this->registerHook('orderConfirmation')
+                || !$this->registerHook('DisplayAdminOrderLeft')
+            ) {
+                return false;
+            }
         }
-			} else {
-				if (!parent::install()
-            || !$this->registerHook('displayPaymentEU')
-            || !$this->registerHook('paymentReturn')
-            || !$this->registerHook('paymentOptions')
-            || !$this->registerHook('orderConfirmation')
-			|| !$this->registerHook('DisplayAdminOrderLeft')   
-        ) {
-            return false;
-        }
-			}
 
         return true;
     }
@@ -196,17 +199,16 @@ class Cointopay_Direct_Sofort extends PaymentModule
         $order_not_enough = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_PNOTENOUGH'));
         $order_state_expired = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_EXPIRED'));
         $order_state_invalid = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_INVALID'));
-		$order_state_pending = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_PENDING'));
+        $order_state_pending = new OrderState(Configuration::get('COINTOPAY_DIRECT_SOFORT_PENDING'));
 
-        return (
-            Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_MERCHANT_ID') &&
+        return (Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_MERCHANT_ID') &&
             Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_SECURITY_CODE') &&
             Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_DISPLAY_NAME') &&
             Configuration::deleteByName('COINTOPAY_DIRECT_SOFORT_CRYPTO_CURRENCY') &&
             $order_not_enough->delete() &&
             $order_state_expired->delete() &&
             $order_state_invalid->delete() &&
-			$order_state_pending->delete() &&
+            $order_state_pending->delete() &&
             parent::uninstall()
         );
     }
@@ -287,6 +289,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
                 'name' => 'Select default checkout currency'
             )
         );
+
         $fields_form = array(
             'form' => array(
                 'legend' => array(
@@ -388,7 +391,6 @@ class Cointopay_Direct_Sofort extends PaymentModule
         return $this->display(__FILE__, 'infos.tpl');
     }
 
-
     public function checkCurrency($cart)
     {
         $currency_order = new Currency($cart->id_currency);
@@ -413,13 +415,14 @@ class Cointopay_Direct_Sofort extends PaymentModule
         if (!$this->active) {
             return;
         }
+
         $this->context->controller->addJS($this->_path . '/views/js/cointopay_custom.js', 'all');
 
         array_push($params, $_REQUEST);
-        
+
         if (isset($_REQUEST['CustomerReferenceNr'])) {
-			//$_REQUEST['PaymentDetailCConly'] = str_replace( "<br><br>", "", $_REQUEST['PaymentDetailCConly'] );
-			$this->smarty->assign('getparams', $_REQUEST);
+            //$_REQUEST['PaymentDetailCConly'] = str_replace( "<br><br>", "", $_REQUEST['PaymentDetailCConly'] );
+            $this->smarty->assign('getparams', $_REQUEST);
             return $this->context->smarty->fetch('module:cointopay_direct_sofort/views/templates/hook/ctp_success_callback.tpl');
         }
     }
@@ -436,7 +439,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
 
         $newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $newOption->setCallToActionText($this->displayName)
-		->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
+            ->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
             ->setAdditionalInformation(
                 $this->context->smarty->fetch('module:cointopay_direct_sofort/views/templates/hook/cointopay_intro.tpl')
             )
@@ -446,8 +449,8 @@ class Cointopay_Direct_Sofort extends PaymentModule
 
         return $paymentOptions;
     }
-	
-	/**
+
+    /**
      * @param array $hookParams
      */
     public function hookActionBuildMailLayoutVariables(array $hookParams)
@@ -462,59 +465,63 @@ class Cointopay_Direct_Sofort extends PaymentModule
             return;
         }
     }
-	
-	public function hookDisplayAdminOrder($params)
+
+    public function hookDisplayAdminOrder($params)
     {
-		$id_order = (int)$params['id_order'];
-		$order = new Order($id_order);
-		return $this->hookDisplayAdminOrderMain($order);
+        $id_order = (int)$params['id_order'];
+        $order = new Order($id_order);
+        return $this->hookDisplayAdminOrderMain($order);
     }
-	
-	public function hookDisplayAdminOrderLeft($params)
+
+    public function hookDisplayAdminOrderLeft($params)
     {
-		$id_order = (int)$params['id_order'];
-		$order = new Order($id_order);
-		return $this->hookDisplayAdminOrderLeftMain($order);
+        $id_order = (int)$params['id_order'];
+        $order = new Order($id_order);
+        return $this->hookDisplayAdminOrderLeftMain($order);
     }
-	
-	public function hookDisplayAdminOrderLeftMain($order)
+
+    public function hookDisplayAdminOrderLeftMain($order)
     {
-       // $id_order = (int)$params['id_order'];
-		//$order = new Order($id_order);
-		$Ordtotal = (float)$order->total_paid;
-		$currency = new CurrencyCore($order->id_currency);
-		$OrdCurrency = $this->currencyCode($currency->iso_code);
+        // $id_order = (int)$params['id_order'];
+        //$order = new Order($id_order);
+        $Ordtotal = (float)$order->total_paid;
+        $currency = new CurrencyCore($order->id_currency);
+        $OrdCurrency = $this->currencyCode($currency->iso_code);
         $link = new Link();
-		$paymentUrl = Context::getContext()->shop->getBaseURL(true) . 'module/'.$this->name.'/makepayment?id_order=' . $order->reference.'&internal_order_id='.$order->id.'&amount='.$Ordtotal.'&isocode='.$OrdCurrency;
+        $paymentUrl = Context::getContext()->shop->getBaseURL(true) . 'module/' . $this->name . '/makepayment?id_order=' . $order->reference . '&internal_order_id=' . $order->id . '&amount=' . $Ordtotal . '&isocode=' . $OrdCurrency;
         $customer = $order->getCustomer();
-        if (Tools::isSubmit('send'.$this->name.'Payment')) {
+        if (Tools::isSubmit('send' . $this->name . 'Payment')) {
             $data = array(
-                        '{firstname}' => $customer->firstname,
-                        '{lastname}' => $customer->lastname,
-                        '{paymentUrl}' => $paymentUrl,
-                    );                    
+                '{firstname}' => $customer->firstname,
+                '{lastname}' => $customer->lastname,
+                '{paymentUrl}' => $paymentUrl,
+            );
+
             Mail::Send(
                 (int)$order->id_lang,
                 'cointopay_direct_sofort',
-                'Credit card payment form for your order ' .$order->getUniqReference(),
+                'Credit card payment form for your order ' . $order->getUniqReference(),
                 $data,
                 $customer->email,
-                $customer->firstname . ' '.$customer->lastname,
+                $customer->firstname . ' ' . $customer->lastname,
                 null,
                 null,
                 null,
-                null, dirname(__FILE__).'/mails/', false, (int)$order->id_shop
+                null,
+                dirname(__FILE__) . '/mails/',
+                false,
+                (int)$order->id_shop
             );
-            
-            Tools::redirectAdmin('index.php?controller=AdminOrders&id_order='.$order->id.'&vieworder&conf=10&token='.$_GET['token']);
+
+            Tools::redirectAdmin('index.php?controller=AdminOrders&id_order=' . $order->id . '&vieworder&conf=10&token=' . $_GET['token']);
         }
-        
+
         //return $this->display(__FILE__, 'views/templates/hook/admin_order.tpl');
         return '<div class="panel" id="cointopaydirectsofortform">
-                    <div class="panel-heading">Payment Page('.$this->displayName.')</div>
-                    <div>Payment Page For this Order:<br/><span id="ctpdirectsofortpurl">'.$paymentUrl.'</span></div>
+                    <div class="panel-heading">Payment Page(' . $this->displayName . ')</div>
+                    <div>Payment Page For this Order:<br/><span id="ctpdirectsofortpurl">' . $paymentUrl . '</span></div>
 					<form method="post" action="" style="display:inline-block;">
-                    <input type="submit" class="btn btn-outline-secondary" name="send'.$this->name.'Payment" value="Send To Customer" />
+                    <input type="submit" class="btn btn-outline-secondary" name="send' . $this->name . 'Payment" value="Send To Customer" />
 					</form><button id="ctpdirectsofortcopytext" class="btn btn-outline-secondary" onclick="ctpdirectsofortCopyFunction()" style="margin-left:10px;">Copy URL to clipboard</button>
                 </div> <script>
                     function ctpdirectsofortCopyFunction() {
@@ -523,50 +530,54 @@ class Cointopay_Direct_Sofort extends PaymentModule
 					}
                 </script>';
     }
-    
+
     public function hookDisplayAdminOrderMain($order)
     {
         //$id_order = (int)$params['id_order'];
-		//$order = new Order($id_order);
-		$Ordtotal = (float)$order->total_paid;
-		$currency = new CurrencyCore($order->id_currency);
-		$OrdCurrency = $this->currencyCode($currency->iso_code);
+        //$order = new Order($id_order);
+        $Ordtotal = (float)$order->total_paid;
+        $currency = new CurrencyCore($order->id_currency);
+        $OrdCurrency = $this->currencyCode($currency->iso_code);
         $link = new Link();
-		$paymentUrl = $link->getModuleLink('cointopay_direct_sofort', 'makepayment', array(
-          'id_order' => $order->reference,
-          'internal_order_id' => $order->id,
-		  'amount' => $Ordtotal,
-		  'isocode' => $OrdCurrency
+        $paymentUrl = $link->getModuleLink('cointopay_direct_sofort', 'makepayment', array(
+            'id_order' => $order->reference,
+            'internal_order_id' => $order->id,
+            'amount' => $Ordtotal,
+            'isocode' => $OrdCurrency
         ), true);
         $customer = $order->getCustomer();
-        if (Tools::isSubmit('send'.$this->name.'Payment')) {
+        if (Tools::isSubmit('send' . $this->name . 'Payment')) {
             $data = array(
-                        '{firstname}' => $customer->firstname,
-                        '{lastname}' => $customer->lastname,
-                        '{paymentUrl}' => $paymentUrl,
-                    );                    
+                '{firstname}' => $customer->firstname,
+                '{lastname}' => $customer->lastname,
+                '{paymentUrl}' => $paymentUrl,
+            );
+
             Mail::Send(
                 (int)$order->id_lang,
                 'cointopay_direct_sofort',
-                'Credit card payment form for your order ' .$order->getUniqReference(),
+                'Credit card payment form for your order ' . $order->getUniqReference(),
                 $data,
                 $customer->email,
-                $customer->firstname . ' '.$customer->lastname,
+                $customer->firstname . ' ' . $customer->lastname,
                 null,
                 null,
                 null,
-                null, dirname(__FILE__).'/mails/', false, (int)$order->id_shop
+                null,
+                dirname(__FILE__) . '/mails/',
+                false,
+                (int)$order->id_shop
             );
-            
-            Tools::redirectAdmin('index.php?controller=AdminOrders&id_order='.$order->id.'&vieworder&conf=10&token='.$_GET['token']);
+
+            Tools::redirectAdmin('index.php?controller=AdminOrders&id_order=' . $order->id . '&vieworder&conf=10&token=' . $_GET['token']);
         }
-        
+
         //return $this->display(__FILE__, 'views/templates/hook/admin_order.tpl');
         return '<div class="panel" id="cointopaydirectsofortform">
-                    <div class="panel-heading">Payment Page('.$this->displayName.')</div>
-                    <div>Payment Page For this Order:<br/><span id="ctpdirectsofortpurl">'.$paymentUrl.'</span></div>
+                    <div class="panel-heading">Payment Page(' . $this->displayName . ')</div>
+                    <div>Payment Page For this Order:<br/><span id="ctpdirectsofortpurl">' . $paymentUrl . '</span></div>
 					<form method="post" action="" style="display:inline-block;">
-                    <input type="submit" class="btn btn-outline-secondary" name="send'.$this->name.'Payment" value="Send To Customer" />
+                    <input type="submit" class="btn btn-outline-secondary" name="send' . $this->name . 'Payment" value="Send To Customer" />
 					</form><button id="ctpdirectsofortcopytext" class="btn btn-outline-secondary" onclick="ctpdirectsofortCopyFunction()" style="margin-left:10px;">Copy URL to clipboard</button>
                 </div> <script>
                     function ctpdirectsofortCopyFunction() {
@@ -575,23 +586,22 @@ class Cointopay_Direct_Sofort extends PaymentModule
 					}
                 </script>';
     }
-	/**
+
+    /**
      * Currency code
      * @param $isoCode
      * @return string
      */
     public function currencyCode($isoCode)
     {
-        $currencyCode='';
+        $currencyCode = '';
 
         if (isset($isoCode) && ($isoCode == 'RUB')) {
-            $currencyCode='RUR';
+            $currencyCode = 'RUR';
         } else {
-            $currencyCode= $isoCode;
+            $currencyCode = $isoCode;
         }
-        
+
         return $currencyCode;
     }
-
-	
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2019 PrestaShop and Contributors
  *
@@ -34,15 +35,15 @@ class Cointopay_Direct_SofortCointopay_SuccessModuleFrontController extends Modu
     public function initContent()
     {
         parent::initContent();
-        
+
         //$cart_id = Tools::getValue('CustomerReferenceNr');
-		//$cart = $this->context->cart;
-        
+        //$cart = $this->context->cart;
+
         $order_id = Tools::getValue('CustomerReferenceNr');
-		//$TransactionID = Tools::getValue('TransactionID');
-		
-		//$ConfirmCode = Tools::getValue('ConfirmCode');
-        
+        //$TransactionID = Tools::getValue('TransactionID');
+
+        //$ConfirmCode = Tools::getValue('ConfirmCode');
+
         $order = new Order($order_id);
 
         try {
@@ -53,25 +54,24 @@ class Cointopay_Direct_SofortCointopay_SuccessModuleFrontController extends Modu
                 throw new Exception($error_message);
             }
 
-           /* $this->context->smarty->assign(array(
+            /* $this->context->smarty->assign(array(
 				'text' => 'Order Status ' . $ctp_order_status . ' not implemented'
 			));*/
-			$this->context->smarty->assign('getparams', $_REQUEST);
-			if (_PS_VERSION_ >= '1.7') {
-				$this->setTemplate('module:cointopay_direct_sofort/views/templates/hook/ctp_success_callback.tpl');
-			} else {
-				$this->setTemplate('ctp_success_callback.tpl');
-			}
-			
+            $this->context->smarty->assign('getparams', $_REQUEST);
+            if (_PS_VERSION_ >= '1.7') {
+                $this->setTemplate('module:cointopay_direct_sofort/views/templates/hook/ctp_success_callback.tpl');
+            } else {
+                $this->setTemplate('ctp_success_callback.tpl');
+            }
         } catch (Exception $e) {
             $this->context->smarty->assign(array(
                 'text' => get_class($e) . ': ' . $e->getMessage()
             ));
-			if (_PS_VERSION_ >= '1.7') {
-				$this->setTemplate('module:cointopay_direct_sofort/views/templates/front/ctp_payment_cancel.tpl');
-			} else {
-				$this->setTemplate('ctp_payment_cancel.tpl');
-			}
+            if (_PS_VERSION_ >= '1.7') {
+                $this->setTemplate('module:cointopay_direct_sofort/views/templates/front/ctp_payment_cancel.tpl');
+            } else {
+                $this->setTemplate('ctp_payment_cancel.tpl');
+            }
         }
     }
 
