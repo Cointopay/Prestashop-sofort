@@ -179,7 +179,7 @@ class Cointopay_Direct_Sofort extends PaymentModule
     protected function createOrderState($state)
     {
         $orderState = new OrderState();
-        $orderState->module_name = 'cointopay_direct_sofort';
+        $orderState->module_name = 'cointopay_cc';
         $orderState->name = array_fill(0, 10, $state['name']);
         $orderState->send_email = 0;
         $orderState->invoice = 0;
