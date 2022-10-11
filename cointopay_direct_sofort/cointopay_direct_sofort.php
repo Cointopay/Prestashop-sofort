@@ -96,76 +96,38 @@ class Cointopay_Direct_Sofort extends PaymentModule
             return false;
         }
 
-        $order_ctp_pending = new OrderState();
-        $order_ctp_pending->module_name = $this->name;
-        $order_ctp_pending->name = array_fill(0, 10, 'Waiting card payment');
-        $order_ctp_pending->send_email = 0;
-        $order_ctp_pending->invoice = 0;
-        $order_ctp_pending->color = 'RoyalBlue';
-        $order_ctp_pending->unremovable = false;
-        $order_ctp_pending->logable = 0;
+        $newStates = [
+            [
+                'name' => 'Waiting card payment',
+                'color' => 'RoyalBlue',
+                'config' => 'COINTOPAY_DIRECT_SOFORT_PENDING',
+            ],
+            [
+                'name' => 'Cointopay Direct Sofort payment expired',
+                'color' => '#DC143C',
+                'config' => 'COINTOPAY_DIRECT_SOFORT_EXPIRED',
+            ],
+            [
+                'name' => 'Cointopay Direct Sofort invoice is invalid',
+                'color' => '#8f0621',
+                'config' => 'COINTOPAY_DIRECT_SOFORT_INVALID',
+            ],
+            [
+                'name' => 'Cointopay Direct Sofort not enough',
+                'color' => '#32CD32',
+                'config' => 'COINTOPAY_DIRECT_SOFORT_PNOTENOUGH',
+            ],
+        ];
 
-        $order_expired = new OrderState();
-        $order_expired->module_name = $this->name;
-        $order_expired->name = array_fill(0, 10, 'Cointopay Direct Sofort payment expired');
-        $order_expired->send_email = 0;
-        $order_expired->invoice = 0;
-        $order_expired->color = '#DC143C';
-        $order_expired->unremovable = false;
-        $order_expired->logable = 0;
+        $existingStatesNames = OrderState::getOrderStates(1);
+        $existingStatesNames = empty($existingStatesNames) ? [] : array_column($existingStatesNames, 'name');
 
-        $order_invalid = new OrderState();
-        $order_invalid->module_name = $this->name;
-        $order_invalid->name = array_fill(0, 10, 'Cointopay Direct Sofort invoice is invalid');
-        $order_invalid->send_email = 0;
-        $order_invalid->invoice = 0;
-        $order_invalid->color = '#8f0621';
-        $order_invalid->unremovable = false;
-        $order_invalid->logable = 0;
-
-        $order_not_enough = new OrderState();
-        $order_not_enough->module_name = $this->name;
-        $order_not_enough->name = array_fill(0, 10, 'Cointopay Direct Sofort not enough');
-        $order_not_enough->send_email = 0;
-        $order_not_enough->invoice = 0;
-        $order_not_enough->color = '#32CD32';
-        $order_not_enough->unremovable = false;
-        $order_not_enough->logable = 0;
-
-        if ($order_ctp_pending->add()) {
-            copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay_direct_sofort/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_ctp_pending->id . '.gif'
-            );
+        foreach ($newStates as $state) {
+            // create a new state if not already exists
+            if (!in_array($state['name'], $existingStatesNames)) {
+                $this->createOrderState($state);
+            }
         }
-
-        if ($order_expired->add()) {
-            copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay_direct_sofort/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_expired->id . '.gif'
-            );
-        }
-
-        if ($order_invalid->add()) {
-            copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay_direct_sofort/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_invalid->id . '.gif'
-            );
-        }
-
-        if ($order_not_enough->add()) {
-            copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay_direct_sofort/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_not_enough->id . '.gif'
-            );
-        }
-
-
-        Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_PNOTENOUGH', $order_not_enough->id);
-        Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_EXPIRED', $order_expired->id);
-        Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_INVALID', $order_invalid->id);
-        Configuration::updateValue('COINTOPAY_DIRECT_SOFORT_PENDING', $order_ctp_pending->id);
-
 
         if (_PS_VERSION_ >= '1.7.7') {
             if (
@@ -211,6 +173,27 @@ class Cointopay_Direct_Sofort extends PaymentModule
             $order_state_pending->delete() &&
             parent::uninstall()
         );
+    }
+
+    protected function createOrderState($state)
+    {
+        $orderState = new OrderState();
+        $orderState->module_name = 'cointopay_direct_sofort';
+        $orderState->name = array_fill(0, 10, $state['name']);
+        $orderState->send_email = 0;
+        $orderState->invoice = 0;
+        $orderState->color = $state['color'];
+        $orderState->unremovable = false;
+        $orderState->logable = 0;
+
+        if ($orderState->add()) {
+            copy(
+                _PS_ROOT_DIR_ . '/modules/cointopay_direct_sofort/views/img/logo.png',
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$orderState->id . '.gif'
+            );
+        }
+
+        Configuration::updateValue($state['config'], $orderState->id);
     }
 
     public function getContent()
