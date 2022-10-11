@@ -65,7 +65,7 @@ class Cointopay_Direct_SofortValidationModuleFrontController extends ModuleFront
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
 
-        $this->module->validateOrder($cart->id, Configuration::get('COINTOPAY_DIRECT_SOFORT_PENDING'), $total, $this->module->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
+        $this->module->validateOrder($cart->id, Configuration::get('COINTOPAY_CC_PENDING'), $total, $this->module->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
         $link = new Link();
         $success_url = '';
         $success_url = $link->getPageLink('order-confirmation', null, null, array(
